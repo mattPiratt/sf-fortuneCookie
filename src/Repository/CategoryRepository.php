@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Entity\FortuneCookie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,8 +17,6 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CategoryRepository extends ServiceEntityRepository
 {
-    const ALIAS = 'category';
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
@@ -51,8 +50,8 @@ class CategoryRepository extends ServiceEntityRepository
         //$query = $this->getEntityManager()->createQuery($dql);
 
 
-        $qb = $this->createQueryBuilder(static::ALIAS)
-            ->addOrderBy(static::ALIAS . '.name', "ASC");
+        $qb = $this->createQueryBuilder(Category::ALIAS)
+            ->addOrderBy(Category::ALIAS . '.name', "ASC");
         $query = $qb->getQuery();
 
         return $query->getResult();
@@ -63,11 +62,14 @@ class CategoryRepository extends ServiceEntityRepository
      */
     public function findBySearch(string $term): array
     {
-        $qb = $this->createQueryBuilder(static::ALIAS)
-            ->where(static::ALIAS . '.name LIKE :searchTerm '
-                . 'OR ' . static::ALIAS . '.iconKey LIKE :searchTerm')
+        $qb = $this->createQueryBuilder(Category::ALIAS)
+            ->leftJoin(Category::ALIAS . ".fortuneCookies", FortuneCookie::ALIAS)
+            ->addSelect(FortuneCookie::ALIAS)
+            ->andWhere(Category::ALIAS . '.name LIKE :searchTerm'
+                . ' OR ' . Category::ALIAS . '.iconKey LIKE :searchTerm'
+                . ' OR ' . FortuneCookie::ALIAS . '.fortune LIKE :searchTerm')
             ->setParameters(['searchTerm' => "%{$term}%"])
-            ->addOrderBy(static::ALIAS . '.name', 'ASC')
+            ->addOrderBy(Category::ALIAS . '.name', 'ASC')
             ->getQuery();
         return $qb->getResult();
     }

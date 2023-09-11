@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
+    const ALIAS = 'category';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

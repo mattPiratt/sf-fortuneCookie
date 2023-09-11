@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: FortuneCookieRepository::class)]
 class FortuneCookie
 {
+    const ALIAS = 'fortuneCookie';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
