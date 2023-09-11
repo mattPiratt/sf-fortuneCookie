@@ -51,6 +51,8 @@ class CategoryRepository extends ServiceEntityRepository
 
 
         $qb = $this->createQueryBuilder(Category::ALIAS)
+            // ->addSelect(FortuneCookie::ALIAS)
+            // ->leftJoin(Category::ALIAS . '.fortuneCookies', FortuneCookie::ALIAS)
             ->addOrderBy(Category::ALIAS . '.name', "ASC");
         $query = $qb->getQuery();
 
