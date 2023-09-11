@@ -76,6 +76,19 @@ class CategoryRepository extends ServiceEntityRepository
         return $qb->getResult();
     }
 
+    public function getCategoryWithFortunes(int $id): ?Category
+    {
+        $qb = $this->createQueryBuilder(Category::ALIAS)
+            ->addSelect(FortuneCookie::ALIAS)
+            ->leftJoin(Category::ALIAS . '.fortuneCookies', FortuneCookie::ALIAS)
+            ->andWhere(Category::ALIAS . '.id = :id')
+            ->setParameter('id', $id);
+
+        return $qb
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Category[] Returns an array of Category objects
     //     */

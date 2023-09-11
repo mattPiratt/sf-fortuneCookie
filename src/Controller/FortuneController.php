@@ -7,6 +7,7 @@ use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FortuneController extends AbstractController
@@ -29,8 +30,14 @@ class FortuneController extends AbstractController
     }
 
     #[Route('/category/{id}', name: 'app_category_show')]
-    public function showCategory(Category $category): Response
+    public function showCategory(int $id, CategoryRepository $categoryRepository): Response
     {
+        $category = $categoryRepository->getCategoryWithFortunes($id);
+
+        if (null === $category) {
+            throw new NotFoundHttpException('this category does not exist');
+        }
+
         return $this->render('fortune/showCategory.html.twig', [
             'category' => $category
         ]);
