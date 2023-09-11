@@ -16,6 +16,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CategoryRepository extends ServiceEntityRepository
 {
+    const ALIAS = 'category';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
@@ -44,12 +46,30 @@ class CategoryRepository extends ServiceEntityRepository
      */
     public function findAllOrdered(): array
     {
-        $dql = "SELECT category from App\Entity\Category as category 
-            ORDER BY category.name ASC";
+        // $dql = "SELECT category from App\Entity\Category as category 
+        //     ORDER BY category.name ASC";
+        //$query = $this->getEntityManager()->createQuery($dql);
 
-        $query = $this->getEntityManager()->createQuery($dql);
+
+        $qb = $this->createQueryBuilder(static::ALIAS)
+            ->addOrderBy(static::ALIAS . '.name', "ASC");
+        $query = $qb->getQuery();
 
         return $query->getResult();
+    }
+
+    /**
+     * @return Category[]
+     */
+    public function findBySearch(string $term): array
+    {
+        $qb = $this->createQueryBuilder(static::ALIAS)
+            ->where(static::ALIAS . '.name LIKE :searchTerm '
+                . 'OR ' . static::ALIAS . '.iconKey LIKE :searchTerm')
+            ->setParameters(['searchTerm' => "%{$term}%"])
+            ->addOrderBy(static::ALIAS . '.name', 'ASC')
+            ->getQuery();
+        return $qb->getResult();
     }
 
     //    /**
